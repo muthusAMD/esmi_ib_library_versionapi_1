@@ -458,11 +458,11 @@ void esmi_exit(void)
 /*
  * Function to get the esmi library version.
  */
-esmi_status_t esmi_library_version_get(struct esmi_library_version *esmi_library_ver)
+esmi_status_t esmi_lib_version_get(struct esmi_lib_version *esmi_lib_ver)
 {
-	esmi_library_ver->major = e_smi_VERSION_MAJOR;
-	esmi_library_ver->minor = e_smi_VERSION_MINOR;
-	esmi_library_ver->patch = e_smi_VERSION_PATCH;
+	esmi_lib_ver->major = e_smi_VERSION_MAJOR;
+	esmi_lib_ver->minor = e_smi_VERSION_MINOR;
+	esmi_lib_ver->patch = e_smi_VERSION_PATCH;
 	return ESMI_SUCCESS;
 }
 

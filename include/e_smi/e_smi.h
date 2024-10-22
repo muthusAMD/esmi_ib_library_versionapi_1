@@ -35,7 +35,7 @@ static const char *bw_string[3] = {"aggregate", "read", "write"}; //!< bandwidth
 /**
  * @brief Deconstruct raw uint32_t into ESMI Library major, minor and patch version numbers
  */
-struct esmi_library_version {
+struct esmi_lib_version {
         uint8_t major;		//!< Major version number
         uint8_t minor;		//!< Minor version number
         uint8_t patch;		//!< Patch version number
@@ -205,7 +205,7 @@ void esmi_exit(void);
  *  @retval ::ESMI_SUCCESS is returned upon successful call.
  *
  */
-esmi_status_t esmi_library_version_get(struct esmi_library_version *esmi_library_ver);
+esmi_status_t esmi_lib_version_get(struct esmi_lib_version *esmi_lib_ver);
 
 /****************************************************************************/
 /** @defgroup EnergyQuer Energy Monitor (RAPL MSR)
