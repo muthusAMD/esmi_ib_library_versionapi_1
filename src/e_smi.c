@@ -18,6 +18,7 @@
 
 #include <e_smi/e_smi.h>
 #include <e_smi/e_smi_monitor.h>
+#include <e_smi/e_smi64Config.h>
 
 static const struct system_metrics *psm = NULL;
 
@@ -452,6 +453,17 @@ void esmi_exit(void)
 	}
 
 	return;
+}
+
+/*
+ * Function to get the esmi library version.
+ */
+esmi_status_t esmi_library_version_get(struct esmi_library_version *esmi_library_ver)
+{
+	esmi_library_ver->major = e_smi_VERSION_MAJOR;
+	esmi_library_ver->minor = e_smi_VERSION_MINOR;
+	esmi_library_ver->patch = e_smi_VERSION_PATCH;
+	return ESMI_SUCCESS;
 }
 
 #define CHECK_ESMI_GET_INPUT(parg) \
@@ -1245,7 +1257,7 @@ esmi_status_t esmi_socket_lclk_dpm_level_set(uint32_t sock_ind, uint8_t nbio_id,
 		return ESMI_INVALID_INPUT;
 	if (nbio_id > 3)
 		return ESMI_INVALID_INPUT;
-	if ((min > max) || (min > 3) || (max > 3))
+	if ((min > max) || (max > psm->max_dpm_level))
 		return ESMI_INVALID_INPUT;
 
 	dpm_val = (nbio_id << 16) | (max << 8) | min;
@@ -1477,11 +1489,11 @@ esmi_status_t esmi_socket_current_active_freq_limit_get(uint32_t sock_ind, uint1
 	limit = msg.args[0] & 0xFFFF;
 
 	while (limit != 0 && index < src_len) {
-		if ((limit & 1) == 1) {
+		if (( limit & 1) == 1) {
 			src_type[ind] = freqlimitsrcnames[index];
 			ind++;
 		}
-		index += 1;
+		index+= 1;
 		limit = limit >> 1;
 	}
 
@@ -1815,14 +1827,14 @@ esmi_status_t esmi_hsmp_proto_ver_get(uint32_t *proto_ver)
 	struct hsmp_message msg = { 0 };
 	esmi_status_t ret;
 
+	CHECK_HSMP_GET_INPUT(proto_ver);
+
 	if (psm->hsmp_proto_ver) {
 		*proto_ver = psm->hsmp_proto_ver;
 		return ESMI_SUCCESS;
 	}
 
 	msg.msg_id = HSMP_GET_PROTO_VER;
-
-	CHECK_HSMP_GET_INPUT(proto_ver);
 
 	msg.response_sz = 1;
 	msg.sock_ind = 0;
@@ -1917,6 +1929,54 @@ esmi_status_t esmi_dram_address_metrics_table_get(uint8_t sock_ind, uint64_t *dr
 	ret = hsmp_xfer(&msg, O_RDONLY);
 	if (!ret)
 		*dram_addr = msg.args[0] | (((uint64_t)(msg.args[1])) << 32);
+
+	return errno_to_esmi_status(ret);
+}
+
+/*
+ * To enable Gfx determinism
+ */
+esmi_status_t esmi_gfx_determinism_enable(uint8_t sock_ind, uint16_t gfxclk_freq)
+{
+	struct hsmp_message msg = { 0 };
+	esmi_status_t ret;
+
+	msg.msg_id	= HSMP_ENABLE_GFX_DETERMINISM;
+	if (check_sup(msg.msg_id))
+		return ESMI_NO_HSMP_MSG_SUP;
+
+	CHECK_HSMP_INPUT();
+
+	if (sock_ind >= psm->total_sockets)
+		return ESMI_INVALID_INPUT;
+
+	msg.num_args	= 1;
+	msg.sock_ind	= sock_ind;
+	msg.args[0]	= gfxclk_freq;
+	ret = hsmp_xfer(&msg, O_WRONLY);
+
+	return errno_to_esmi_status(ret);
+}
+
+/*
+ * To disable Gfx determinism
+ */
+esmi_status_t esmi_gfx_determinism_disable(uint8_t sock_ind)
+{
+	struct hsmp_message msg = { 0 };
+	esmi_status_t ret;
+
+	msg.msg_id	= HSMP_DISABLE_GFX_DETERMINISM;
+	if (check_sup(msg.msg_id))
+		return ESMI_NO_HSMP_MSG_SUP;
+
+	CHECK_HSMP_INPUT();
+
+	if (sock_ind >= psm->total_sockets)
+		return ESMI_INVALID_INPUT;
+
+	msg.sock_ind	= sock_ind;
+	ret = hsmp_xfer(&msg, O_WRONLY);
 
 	return errno_to_esmi_status(ret);
 }
