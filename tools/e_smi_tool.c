@@ -254,7 +254,7 @@ static int epyc_get_temperature(void)
 	return ESMI_SUCCESS;
 }
 
-static esmi_status_t epyc_get_smu_fw_version(void)
+/*static esmi_status_t epyc_get_smu_fw_version(void)
 {
 	struct smu_fw_version smu_fw;
 	esmi_status_t ret;
@@ -272,7 +272,26 @@ static esmi_status_t epyc_get_smu_fw_version(void)
 	printf("------------------------------------------\n");
 
 	return ESMI_SUCCESS;
+}*/
+static esmi_status_t epyc_get_smu_fw_version(void)
+{
+        struct hsmp_driver_version smu_fw;
+        esmi_status_t ret;
+
+        ret = esmi_hsmp_driver_version_get(&smu_fw);
+        if (ret != ESMI_SUCCESS) {
+                printf("Failed to get HSMP Driver Version, Err[%d]: %s\n",
+                        ret, esmi_get_err_msg(ret));
+                return ret;
+        }
+        printf("\n------------------------------------------");
+        printf("\n| HSMP Driver Version   |  %u.%u \t\t |\n",
+                smu_fw.major, smu_fw.minor);
+        printf("------------------------------------------\n");
+
+        return ESMI_SUCCESS;
 }
+
 
 static esmi_status_t epyc_get_hsmp_proto_version(void)
 {
