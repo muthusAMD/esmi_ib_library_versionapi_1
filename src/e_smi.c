@@ -19,6 +19,10 @@
 #include <e_smi/e_smi.h>
 #include <e_smi/e_smi_monitor.h>
 #include <e_smi/e_smi64Config.h>
+#define HSMP_DRIVER_VERSION_FILE "/sys/module/amd_hsmp/version"
+#define HSMP_DRIVER_VERSION_ARRAY_SIZE  2
+#define HSMP_DRIVER_MAJOR_VERSION_INDEX 0
+#define HSMP_DRIVER_MINOR_VERSION_INDEX 1
 
 static const struct system_metrics *psm = NULL;
 
@@ -456,13 +460,20 @@ void esmi_exit(void)
 }
 
 /*
- * Function to get the esmi library version.
+ * Function to get the hsmp driver version.
  */
-esmi_status_t esmi_lib_version_get(struct esmi_lib_version *esmi_lib_ver)
+esmi_status_t hsmp_driver_version_get(struct hsmp_driver_version *hsmp_driver_ver)
 {
-	esmi_lib_ver->major = e_smi_VERSION_MAJOR;
-	esmi_lib_ver->minor = e_smi_VERSION_MINOR;
-	esmi_lib_ver->patch = e_smi_VERSION_PATCH;
+	FILE *hsmp_driver_ver_file = fopen("/sys/module/amd_hsmp/version", "r");
+	if(NULL == hsmp_driver_ver_file){ return ESMI_FILE_NOT_FOUND; }
+
+	int version_num_array[HSMP_DRIVER_VERSION_ARRAY_SIZE] = {0};
+	for(int loop_counter = 0; loop_counter < HSMP_DRIVER_VERSION_ARRAY_SIZE; loop_counter++)
+	{
+		fscanf(hsmp_driver_ver_file, "%d.", &version_num_array[loop_counter] );
+	}
+	hsmp_driver_ver->major = version_num_array[HSMP_DRIVER_MAJOR_VERSION_INDEX];
+	hsmp_driver_ver->minor = version_num_array[HSMP_DRIVER_MINOR_VERSION_INDEX];
 	return ESMI_SUCCESS;
 }
 
