@@ -197,13 +197,13 @@ void esmi_exit(void);
 /**
  *  @brief Get the HSMP Driver version
  *
- *  @details This function will return the Esmi Library version at @p hsmp_driver_ver
+ *  @details This function will return the HSMP Driver version at @p hsmp_driver_ver
  *  Supported on all hsmp protocol versions
  *
  *  @retval ::ESMI_SUCCESS is returned upon successful call.
  *
  */
-esmi_status_t hsmp_driver_version_get(struct hsmp_driver_version *hsmp_driver_ver);
+esmi_status_t esmi_hsmp_driver_version_get(struct hsmp_driver_version *hsmp_driver_ver);
 
 /****************************************************************************/
 /** @defgroup EnergyQuer Energy Monitor (RAPL MSR)

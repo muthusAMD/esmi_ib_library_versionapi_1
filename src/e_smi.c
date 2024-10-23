@@ -462,7 +462,7 @@ void esmi_exit(void)
 /*
  * Function to get the hsmp driver version.
  */
-esmi_status_t hsmp_driver_version_get(struct hsmp_driver_version *hsmp_driver_ver)
+esmi_status_t esmi_hsmp_driver_version_get(struct hsmp_driver_version *hsmp_driver_ver)
 {
 	FILE *hsmp_driver_ver_file = fopen("/sys/module/amd_hsmp/version", "r");
 	if(NULL == hsmp_driver_ver_file){ return ESMI_FILE_NOT_FOUND; }
