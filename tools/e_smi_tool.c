@@ -254,7 +254,7 @@ static int epyc_get_temperature(void)
 	return ESMI_SUCCESS;
 }
 
-/*static esmi_status_t epyc_get_smu_fw_version(void)
+static esmi_status_t epyc_get_smu_fw_version(void)
 {
 	struct smu_fw_version smu_fw;
 	esmi_status_t ret;
@@ -272,13 +272,13 @@ static int epyc_get_temperature(void)
 	printf("------------------------------------------\n");
 
 	return ESMI_SUCCESS;
-}*/
-static esmi_status_t epyc_get_smu_fw_version(void)
+}
+static esmi_status_t epyc_get_hsmp_driver_version(void)
 {
-        struct hsmp_driver_version smu_fw;
+        struct hsmp_driver_version hsmp_driver_ver;
         esmi_status_t ret;
 
-        ret = esmi_hsmp_driver_version_get(&smu_fw);
+        ret = esmi_hsmp_driver_version_get(&hsmp_driver_ver);
         if (ret != ESMI_SUCCESS) {
                 printf("Failed to get HSMP Driver Version, Err[%d]: %s\n",
                         ret, esmi_get_err_msg(ret));
@@ -286,7 +286,7 @@ static esmi_status_t epyc_get_smu_fw_version(void)
         }
         printf("\n------------------------------------------");
         printf("\n| HSMP Driver Version   |  %u.%u \t\t |\n",
-                smu_fw.major, smu_fw.minor);
+                hsmp_driver_ver.major, hsmp_driver_ver.minor);
         printf("------------------------------------------\n");
 
         return ESMI_SUCCESS;
@@ -2227,6 +2227,7 @@ static int parsesmi_args(int argc,char **argv)
 		{"showsockenergy",	no_argument,		0,	's'},
 		{"showsockpower",	no_argument,		0,	'p'},
 		{"showsmufwver",	no_argument,		0,	'f'},
+		{"showhsmpdriverver",	no_argument,		0,	'c'},
 		{"showcorebl",		required_argument,	0,	'L'},
 		{"setpowerlimit",	required_argument,	0,	'C'},
 		{"setcorebl",		required_argument,	0,	'a'},
@@ -2521,6 +2522,10 @@ static int parsesmi_args(int argc,char **argv)
 		case 'd' :
 			/* Get DDR bandwidth details */
 			ret = epyc_get_ddr_bw();
+			break;
+		case 'c' :
+			/* Get HSMP driver version */
+			ret = epyc_get_hsmp_driver_version();
 			break;
 		case 'f' :
 			/* Get SMU Firmware version */
