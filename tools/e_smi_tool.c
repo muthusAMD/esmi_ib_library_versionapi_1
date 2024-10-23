@@ -1808,6 +1808,7 @@ static char* const feat_ver2_get[] = {
 	"  --showcorebl [CORE]\t\t\t\t\t\tShow Boostlimit for a given CPU (MHz)",
 	"  --showsockc0res [SOCKET]\t\t\t\t\tShow c0_residency for a given socket (%%)",
 	"  --showsmufwver\t\t\t\t\t\tShow SMU FW Version",
+	"  --showhsmpdriverver\t\t\t\t\t\tShow HSMP Driver Version",
 	"  --showhsmpprotover\t\t\t\t\t\tShow HSMP Protocol Version",
 	"  --showprochotstatus\t\t\t\t\t\tShow HSMP PROCHOT status for all sockets",
 	"  --showclocks\t\t\t\t\t\t\tShow Clock Metrics (MHz) for all sockets",
@@ -2227,7 +2228,7 @@ static int parsesmi_args(int argc,char **argv)
 		{"showsockenergy",	no_argument,		0,	's'},
 		{"showsockpower",	no_argument,		0,	'p'},
 		{"showsmufwver",	no_argument,		0,	'f'},
-		{"showhsmpdriverver",	no_argument,		0,	'c'},
+		{"showhsmpdriverver",	no_argument,		0,	'I'},
 		{"showcorebl",		required_argument,	0,	'L'},
 		{"setpowerlimit",	required_argument,	0,	'C'},
 		{"setcorebl",		required_argument,	0,	'a'},
@@ -2523,7 +2524,7 @@ static int parsesmi_args(int argc,char **argv)
 			/* Get DDR bandwidth details */
 			ret = epyc_get_ddr_bw();
 			break;
-		case 'c' :
+		case 'I' :
 			/* Get HSMP driver version */
 			ret = epyc_get_hsmp_driver_version();
 			break;
